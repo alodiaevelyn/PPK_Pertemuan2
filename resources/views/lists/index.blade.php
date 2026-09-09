@@ -28,6 +28,10 @@
 
         <hr>
 
+        <a href="/lists/{{ $list->id }}/members">
+        Kelola Anggota
+    </a>
+
     @empty
 
         <p>Belum ada project.</p>
