@@ -1,7 +1,30 @@
 <?php
 
+use App\Http\Controllers\ListProgressController;
+use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+// =========================================================================
+// PROGRAMMER 2: Fitur Tugas & Pemantauan Progres (SRS-003, SRS-004, SRS-005)
+// =========================================================================
+Route::middleware(['auth'])->group(function () {
+    // SRS-005: Pemantauan progres oleh pemilik daftar
+    Route::get('/lists/{list}/progress', [ListProgressController::class, 'show'])
+        ->name('lists.progress');
+
+    // SRS-003: Menambah dan mengupdate tugas dalam list (prioritas & tenggat waktu)
+    Route::post('/lists/{list}/tasks', [TaskController::class, 'store'])
+        ->name('tasks.store');
+    Route::put('/tasks/{task}', [TaskController::class, 'update'])
+        ->name('tasks.update');
+    Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])
+        ->name('tasks.destroy');
+
+    // SRS-004: Menandai tugas sebagai selesai / belum selesai
+    Route::patch('/tasks/{task}/toggle-complete', [TaskController::class, 'toggleComplete'])
+        ->name('tasks.toggle-complete');
 });
