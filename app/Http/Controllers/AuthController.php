@@ -52,6 +52,10 @@ class AuthController extends Controller
 
             return redirect('/lists');
         }
+
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ])->onlyInput('email');
     }
 
     public function logout(Request $request)

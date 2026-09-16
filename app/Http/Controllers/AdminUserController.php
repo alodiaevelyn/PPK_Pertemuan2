@@ -18,7 +18,7 @@ class AdminUserController extends Controller
 
         $users = User::orderBy('created_at', 'desc')->get();
 
-        return view('admin.users.index', compact('users'));
+        return view('admin.index', compact('users'));
     }
 
     // Menampilkan form tambah pengguna
@@ -28,7 +28,7 @@ class AdminUserController extends Controller
             abort(403);
         }
 
-        return view('admin.users.create');
+        return view('admin.create');
     }
 
     // Menyimpan pengguna baru
