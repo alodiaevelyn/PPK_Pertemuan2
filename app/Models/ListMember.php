@@ -10,6 +10,10 @@ class ListMember extends Model
 {
     use HasFactory;
 
+use Illuminate\Database\Eloquent\Model;
+
+class ListMember extends Model
+{
     protected $table = 'list_members';
 
     public $timestamps = false;
@@ -36,5 +40,19 @@ class ListMember extends Model
     public function taskList(): BelongsTo
     {
         return $this->belongsTo(TaskList::class, 'list_id');
+    }
+}
+    protected $casts = [
+        'joined_at' => 'datetime',
+    ];
+
+    public function list(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(TaskList::class, 'list_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

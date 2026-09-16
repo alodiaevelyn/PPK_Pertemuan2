@@ -2,6 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
+
+class Task extends Model
+{
+    protected $table = 'tasks';
+
+    protected $primaryKey = 'id';
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
+
+    protected $fillable = [
+        'id',
 use App\Enums\TaskPriority;
 use App\Enums\TaskStatus;
 use Database\Factories\TaskFactory;
@@ -27,6 +41,7 @@ class Task extends Model
         'created_by',
         'completed_at',
     ];
+}
 
     /**
      * Casting atribut ke Enum dan tipe data waktu

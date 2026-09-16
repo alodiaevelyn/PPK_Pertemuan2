@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class AdminUserController extends Controller
 {
@@ -19,6 +20,7 @@ class AdminUserController extends Controller
         $users = User::orderBy('created_at', 'desc')->get();
 
         return view('admin.index', compact('users'));
+        return view('admin.users.index', compact('users'));
     }
 
     // Menampilkan form tambah pengguna
@@ -29,6 +31,7 @@ class AdminUserController extends Controller
         }
 
         return view('admin.create');
+        return view('admin.users.create');
     }
 
     // Menyimpan pengguna baru
@@ -46,6 +49,7 @@ class AdminUserController extends Controller
         ]);
 
         User::create([
+            'id' => 'USR-' . strtoupper(Str::random(16)),
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -70,4 +74,5 @@ class AdminUserController extends Controller
         return redirect('/admin/users')
             ->with('success', 'Akun pengguna berhasil dihapus.');
     }
+}
 }

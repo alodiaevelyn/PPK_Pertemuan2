@@ -7,6 +7,7 @@ use App\Models\TaskList;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class ListMemberController extends Controller
 {
@@ -39,6 +40,7 @@ class ListMemberController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (! $user) {
+        if (!$user) {
             return back()->withErrors([
                 'email' => 'Pengguna dengan email tersebut tidak ditemukan.',
             ]);
@@ -55,6 +57,7 @@ class ListMemberController extends Controller
         }
 
         ListMember::create([
+            'id' => 'LM-' . strtoupper(Str::random(17)),
             'list_id' => $list->id,
             'user_id' => $user->id,
             'role' => $request->role,
@@ -64,4 +67,5 @@ class ListMemberController extends Controller
         return redirect("/lists/{$list->id}/members")
             ->with('success', 'Pengguna berhasil ditambahkan.');
     }
+}
 }

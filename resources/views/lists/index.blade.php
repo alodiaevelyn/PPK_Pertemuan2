@@ -47,6 +47,8 @@
                 </button>
             </form>
         @endcan
+        Kelola Anggota
+    </a>
 
     @empty
 

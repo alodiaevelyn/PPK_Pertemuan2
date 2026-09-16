@@ -13,6 +13,7 @@ Route::get('/', function () {
 });
 
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::get('/register', [AuthController::class, 'showRegister']);
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -30,6 +31,31 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/lists/create', [ListController::class, 'create'])->name('lists.create');
     Route::post('/lists', [ListController::class, 'store'])->name('lists.store');
     Route::delete('/lists/{list}', [ListController::class, 'destroy'])->name('lists.destroy');
+Route::post('/logout', [AuthController::class, 'logout']);
+
+Route::middleware('auth')->group(function () {
+
+    // List / Project (SRS-006, SRS-007, SRS-008)
+    Route::get('/lists', [ListController::class, 'index']);
+    Route::get('/lists/create', [ListController::class, 'create']);
+    Route::post('/lists', [ListController::class, 'store']);
+
+    // Task dalam project
+    Route::get('/lists/{listId}/tasks/create', [TaskController::class, 'create']);
+
+    // SRS-002: Keanggotaan daftar
+    Route::get('/lists/{listId}/members', [ListMemberController::class, 'index']);
+    Route::post('/lists/{listId}/members', [ListMemberController::class, 'store']);
+
+    // Admin
+    Route::get('/admin/users', [AdminUserController::class, 'index']);
+    Route::get('/admin/users/create', [AdminUserController::class, 'create']);
+    Route::post('/admin/users', [AdminUserController::class, 'store']);
+    Route::delete('/admin/users/{id}', [AdminUserController::class, 'destroy']);
+
+    // =========================================================================
+    // PROGRAMMER 2: Fitur Tugas & Pemantauan Progres (SRS-003, SRS-004, SRS-005)
+    // =========================================================================
 
     // SRS-005: Pemantauan progres oleh pemilik daftar
     Route::get('/lists/{list}/progress', [ListProgressController::class, 'show'])
@@ -60,4 +86,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/users/create', [AdminUserController::class, 'create'])->name('admin.users.create');
     Route::post('/admin/users', [AdminUserController::class, 'store'])->name('admin.users.store');
     Route::delete('/admin/users/{id}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+});
 });

@@ -38,6 +38,8 @@
 
         <label>Tenggat Waktu (Opsional)</label><br>
         <input type="datetime-local" name="due_date">
+        <label>Deskripsi</label><br>
+        <textarea name="description"></textarea>
         <br><br>
 
         <button type="submit">Tambah Tugas</button>
