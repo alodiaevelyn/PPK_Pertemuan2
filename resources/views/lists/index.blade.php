@@ -29,8 +29,24 @@
         <hr>
 
         <a href="/lists/{{ $list->id }}/members">
-        Kelola Anggota
-    </a>
+            Kelola Anggota
+        </a>
+
+        |
+        <a href="{{ route('lists.progress', $list) }}">
+            Pantau Progres
+        </a>
+
+        @can('delete', $list)
+            |
+            <form action="{{ route('lists.destroy', $list) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus daftar ini beserta seluruh tugas dan keanggotaan?');" style="display:inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" style="color:red; background:none; border:none; cursor:pointer; text-decoration:underline;">
+                    Hapus Daftar
+                </button>
+            </form>
+        @endcan
 
     @empty
 
