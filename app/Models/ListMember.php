@@ -8,21 +8,23 @@ class ListMember extends Model
 {
     protected $table = 'list_members';
 
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     public $timestamps = false;
 
     protected $fillable = [
-        'id',
         'list_id',
         'user_id',
         'role',
         'joined_at',
     ];
+
+    protected $casts = [
+        'joined_at' => 'datetime',
+    ];
+
+    public function list(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(TaskList::class, 'list_id');
+    }
 
     public function user()
     {
