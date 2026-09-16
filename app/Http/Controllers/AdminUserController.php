@@ -19,6 +19,7 @@ class AdminUserController extends Controller
 
         $users = User::orderBy('created_at', 'desc')->get();
 
+        return view('admin.index', compact('users'));
         return view('admin.users.index', compact('users'));
     }
 
@@ -29,6 +30,7 @@ class AdminUserController extends Controller
             abort(403);
         }
 
+        return view('admin.create');
         return view('admin.users.create');
     }
 
@@ -72,4 +74,5 @@ class AdminUserController extends Controller
         return redirect('/admin/users')
             ->with('success', 'Akun pengguna berhasil dihapus.');
     }
+}
 }

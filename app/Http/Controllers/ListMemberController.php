@@ -39,6 +39,7 @@ class ListMemberController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
+        if (! $user) {
         if (!$user) {
             return back()->withErrors([
                 'email' => 'Pengguna dengan email tersebut tidak ditemukan.',
@@ -66,4 +67,5 @@ class ListMemberController extends Controller
         return redirect("/lists/{$list->id}/members")
             ->with('success', 'Pengguna berhasil ditambahkan.');
     }
+}
 }

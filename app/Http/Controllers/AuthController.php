@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -24,7 +23,6 @@ class AuthController extends Controller
         ]);
 
         User::create([
-            'id' => 'USR-' . strtoupper(Str::random(10)),
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -58,14 +56,12 @@ class AuthController extends Controller
     
             $request->session()->regenerate();
 
-            return redirect('/dashboard');
+            return redirect('/lists');
         }
 
-        return back()
-            ->withErrors([
-                'email' => 'Email atau password salah.',
-            ])
-            ->onlyInput('email');
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ])->onlyInput('email');
     }
 
     public function logout(Request $request)

@@ -53,28 +53,54 @@ use App\Models\Task;
 use App\Models\TaskList;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
 
 class TaskController extends Controller
 {
     /**
-     * Menyimpan tugas baru ke dalam daftar dengan prioritas dan batas waktu (SRS-003)
+     * Menampilkan form pembuatan tugas dalam daftar
+     */
+    public function create(TaskList $list): View
+    {
+        Gate::authorize('createTask', $list);
+
+        return view('tasks.create', compact('list'));
+    }
+
+    /**
+     * Menyimpan tugas baru ke dalam daftar secara atomik (SRS-003, SRS-008, SRS-009)
+     * Pengguna otomatis menjadi pembuat dan pemilik/penanggung jawab awal.
      */
     public function store(StoreTaskRequest $request, TaskList $list): RedirectResponse|JsonResponse
     {
-        $validated = $request->validated();
-        $validated['created_by'] = auth()->id();
-        $validated['status'] = TaskStatus::TODO->value;
+        // Otorisasi sudah diperiksa di StoreTaskRequest::authorize() (SRS-009)
 
-        $task = $list->tasks()->create($validated);
+        $task = DB::transaction(function () use ($request, $list) {
+            $validated = $request->validated();
+            $validated['created_by'] = auth()->id();
+            $validated['status'] = TaskStatus::TODO->value;
+
+            $task = $list->tasks()->create($validated);
+
+            // Pengguna otomatis menjadi pemilik / penanggung jawab tugas
+            $task->assignees()->attach(auth()->id(), [
+                'assigned_at' => now(),
+            ]);
+
+            return $task;
+        });
 
         if ($request->wantsJson()) {
             return response()->json([
                 'message' => 'Tugas berhasil ditambahkan.',
-                'task' => $task->load(['category', 'creator']),
+                'task' => $task->load(['category', 'creator', 'assignees']),
             ], 201);
         }
 
-        return back()->with('success', 'Tugas berhasil ditambahkan.');
+        return redirect("/lists/{$list->id}/tasks/create")
+            ->with('success', 'Tugas berhasil ditambahkan.');
     }
 
     /**
@@ -82,6 +108,8 @@ class TaskController extends Controller
      */
     public function update(UpdateTaskRequest $request, Task $task): RedirectResponse|JsonResponse
     {
+        Gate::authorize('update', $task);
+
         $validated = $request->validated();
 
         // SRS-004: Sinkronisasi waktu completed_at saat status berubah
@@ -110,6 +138,8 @@ class TaskController extends Controller
      */
     public function toggleComplete(Task $task): RedirectResponse|JsonResponse
     {
+        Gate::authorize('toggleComplete', $task);
+
         $task->toggleComplete();
 
         $statusLabel = $task->status->label();
@@ -129,11 +159,16 @@ class TaskController extends Controller
     }
 
     /**
-     * Menghapus tugas
+     * Menghapus tugas secara atomik (SRS-008 & SRS-009)
      */
     public function destroy(Task $task): RedirectResponse|JsonResponse
     {
-        $task->delete();
+        Gate::authorize('delete', $task);
+
+        DB::transaction(function () use ($task) {
+            $task->assignees()->detach();
+            $task->delete();
+        });
 
         if (request()->wantsJson()) {
             return response()->json(['message' => 'Tugas berhasil dihapus.']);
