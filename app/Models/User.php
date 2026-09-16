@@ -2,23 +2,19 @@
 
 namespace App\Models;
 
+use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
-
-    protected $table = 'users';
-
-    protected $primaryKey = 'id';
-
-    public $incrementing = false;
-
-    protected $keyType = 'string';
+    /** @use HasFactory<UserFactory> */
+    use HasFactory, Notifiable;
 
     protected $fillable = [
-        'id',
         'name',
         'email',
         'password',
@@ -27,10 +23,36 @@ class User extends Authenticatable
 
     protected $hidden = [
         'password',
+        'remember_token',
     ];
 
-    public function getAuthPassword()
+    protected function casts(): array
     {
-        return $this->password;
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+
+    public function ownedLists(): HasMany
+    {
+        return $this->hasMany(TaskList::class, 'owner_id');
+    }
+
+    public function memberLists(): BelongsToMany
+    {
+        return $this->belongsToMany(TaskList::class, 'list_members', 'user_id', 'list_id')
+            ->withPivot('role', 'joined_at');
+    }
+
+    public function createdTasks(): HasMany
+    {
+        return $this->hasMany(Task::class, 'created_by');
+    }
+
+    public function assignedTasks(): BelongsToMany
+    {
+        return $this->belongsToMany(Task::class, 'task_assignments', 'user_id', 'task_id')
+            ->withPivot('assigned_at');
     }
 }
