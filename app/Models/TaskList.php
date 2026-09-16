@@ -2,6 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
+
+class TaskList extends Model
+{
+    protected $table = 'lists';
+
+    protected $primaryKey = 'id';
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
+
+    protected $fillable = [
+        'id',
 use App\Models\Traits\HasTaskProgress;
 use Database\Factories\TaskListFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -27,6 +41,7 @@ class TaskList extends Model
         'description',
         'owner_id',
     ];
+}
 
     // =========================================================================
     // RELASI ELOQUENT SESUAI ERD PM
