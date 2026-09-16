@@ -47,6 +47,19 @@ Route::middleware('auth')->group(function () {
         [ListMemberController::class, 'store']
     );
 });
+
+use App\Http\Controllers\AdminUserController;
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/admin/users', [AdminUserController::class, 'index']);
+
+    Route::get('/admin/users/create', [AdminUserController::class, 'create']);
+
+    Route::post('/admin/users', [AdminUserController::class, 'store']);
+
+    Route::delete('/admin/users/{id}', [AdminUserController::class, 'destroy']);
+});
 Route::get('/login', [AuthController::class, 'showLogin']);
 Route::post('/login', [AuthController::class, 'login']);
 
