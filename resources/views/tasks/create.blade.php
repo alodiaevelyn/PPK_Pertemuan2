@@ -28,8 +28,16 @@
         <input type="text" name="title">
         <br><br>
 
-        <label>Deskripsi</label><br>
-        <textarea name="description"></textarea>
+        <label>Prioritas</label><br>
+        <select name="priority">
+            <option value="low">Rendah (Low)</option>
+            <option value="medium" selected>Sedang (Medium)</option>
+            <option value="high">Tinggi (High)</option>
+        </select>
+        <br><br>
+
+        <label>Tenggat Waktu (Opsional)</label><br>
+        <input type="datetime-local" name="due_date">
         <br><br>
 
         <button type="submit">Tambah Tugas</button>
