@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ListController;
+use App\Http\Controllers\ListMemberController;
 use App\Http\Controllers\ListProgressController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
@@ -7,10 +11,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ListController;
-use App\Http\Controllers\TaskController;
 
 Route::get('/register', [AuthController::class, 'showRegister']);
 Route::post('/register', [AuthController::class, 'register']);
@@ -22,52 +22,28 @@ Route::post('/logout', [AuthController::class, 'logout']);
 
 Route::middleware('auth')->group(function () {
 
-    // List / Project
+    // List / Project (SRS-006, SRS-007, SRS-008)
     Route::get('/lists', [ListController::class, 'index']);
     Route::get('/lists/create', [ListController::class, 'create']);
     Route::post('/lists', [ListController::class, 'store']);
 
     // Task dalam project
     Route::get('/lists/{listId}/tasks/create', [TaskController::class, 'create']);
-    Route::post('/lists/{listId}/tasks', [TaskController::class, 'store']);
-});
 
-use App\Http\Controllers\ListMemberController;
+    // SRS-002: Keanggotaan daftar
+    Route::get('/lists/{listId}/members', [ListMemberController::class, 'index']);
+    Route::post('/lists/{listId}/members', [ListMemberController::class, 'store']);
 
-Route::middleware('auth')->group(function () {
-
-    // SRS-002
-    Route::get(
-        '/lists/{listId}/members',
-        [ListMemberController::class, 'index']
-    );
-
-    Route::post(
-        '/lists/{listId}/members',
-        [ListMemberController::class, 'store']
-    );
-});
-
-use App\Http\Controllers\AdminUserController;
-
-Route::middleware('auth')->group(function () {
-
+    // Admin
     Route::get('/admin/users', [AdminUserController::class, 'index']);
-
     Route::get('/admin/users/create', [AdminUserController::class, 'create']);
-
     Route::post('/admin/users', [AdminUserController::class, 'store']);
-
     Route::delete('/admin/users/{id}', [AdminUserController::class, 'destroy']);
-});
-Route::get('/login', [AuthController::class, 'showLogin']);
-Route::post('/login', [AuthController::class, 'login']);
 
-Route::post('/logout', [AuthController::class, 'logout']);
-// =========================================================================
-// PROGRAMMER 2: Fitur Tugas & Pemantauan Progres (SRS-003, SRS-004, SRS-005)
-// =========================================================================
-Route::middleware(['auth'])->group(function () {
+    // =========================================================================
+    // PROGRAMMER 2: Fitur Tugas & Pemantauan Progres (SRS-003, SRS-004, SRS-005)
+    // =========================================================================
+
     // SRS-005: Pemantauan progres oleh pemilik daftar
     Route::get('/lists/{list}/progress', [ListProgressController::class, 'show'])
         ->name('lists.progress');
