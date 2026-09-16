@@ -31,6 +31,22 @@ Route::middleware('auth')->group(function () {
     Route::get('/lists/{listId}/tasks/create', [TaskController::class, 'create']);
     Route::post('/lists/{listId}/tasks', [TaskController::class, 'store']);
 });
+
+use App\Http\Controllers\ListMemberController;
+
+Route::middleware('auth')->group(function () {
+
+    // SRS-002
+    Route::get(
+        '/lists/{listId}/members',
+        [ListMemberController::class, 'index']
+    );
+
+    Route::post(
+        '/lists/{listId}/members',
+        [ListMemberController::class, 'store']
+    );
+});
 Route::get('/login', [AuthController::class, 'showLogin']);
 Route::post('/login', [AuthController::class, 'login']);
 
